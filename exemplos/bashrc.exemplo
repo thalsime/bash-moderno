@@ -81,8 +81,16 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash --cmd j)"
 # 12) Starship (detecta BLE_VERSION e integra os hooks sozinho)
 command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
 
-# 13) atuin (historico; com ble.sh registra os hooks corretamente; assume C-r)
-command -v atuin >/dev/null 2>&1 && eval "$(atuin init bash)"
+# 13) atuin (historico). O fzf (ble-import -d) reivindica o C-r depois do attach;
+#     reempilhamos o bind do atuin como idle-task para que ele assuma o C-r por
+#     ultimo. O fzf mantem C-t e M-c; o atuin fica com C-r e a seta-cima.
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+  if [[ -n ${BLE_VERSION-} ]]; then
+    _atuin_reclaim_cr() { atuin-bind -m emacs '\C-r' atuin-search-emacs 2>/dev/null; }
+    ble/util/idle.push _atuin_reclaim_cr
+  fi
+fi
 
 # ===== ble-attach SEMPRE por ultimo - nada abaixo desta linha =====
 [[ ! ${BLE_VERSION-} ]] || ble-attach

@@ -42,13 +42,27 @@ Tanto o fzf quanto o atuin querem o `C-r`. Quando se usa o atuin, o desejavel e
 que ele fique com o `C-r` (busca de historico melhor) e o fzf mantenha apenas
 `C-t` e `M-c`. Para isso o atuin precisa registrar seu bind DEPOIS do fzf.
 
-Como o fzf carrega via `ble-import -d` (apos o attach) e o `eval "$(atuin init
-bash)"` roda ainda no corpo do `.bashrc`, a ordem final de quem fica com o `C-r`
-depende de como o atuin registra o atalho sob o ble.sh. Se apos configurar tudo
-o `C-r` ainda abrir o fzf, force o atuin a reassumir empilhando o bind como uma
-tarefa ociosa posterior. Um caminho robusto e re-ligar o `C-r` ao widget do
-atuin numa `blehook`/idle-task que rode depois da carga do fzf. Verifique o que
-o `atuin init bash` gera no seu sistema (o nome do widget) e ajuste.
+O `eval "$(atuin init bash)"` roda no corpo do `.bashrc` (sincrono), mas o fzf
+carrega via `ble-import -d` (apos o attach) - ou seja, o fzf reivindica o `C-r`
+DEPOIS e ganha. Sem tratamento, o `C-r` abre o fzf, nao o atuin.
 
-Diagnostico: `ble-bind -d | grep -iE 'C-r|atuin|fzf'` mostra a quem o `C-r` esta
-ligado no momento.
+A solucao verificada e reempilhar o bind do atuin como idle-task, que roda
+depois da carga do fzf. Logo apos o `atuin init`, no `.bashrc`:
+
+```bash
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+  if [[ -n ${BLE_VERSION-} ]]; then
+    _atuin_reclaim_cr() { atuin-bind -m emacs '\C-r' atuin-search-emacs 2>/dev/null; }
+    ble/util/idle.push _atuin_reclaim_cr
+  fi
+fi
+```
+
+A funcao `atuin-bind` continua definida apos o `init`, entao a idle-task apenas
+refaz o bind do `C-r` quando o fzf ja carregou. Resultado final (confirmado):
+`C-r` e a seta-cima ficam com o atuin; `C-t` e `M-c` ficam com o fzf.
+
+Diagnostico: `ble-bind -m emacs -d | grep -iE '\bC-r\b'` mostra a quem o `C-r`
+esta ligado. Se aparecer `-x C-r fzf-history-widget`, o fzf ganhou; se aparecer
+`-s C-r '\C-x...'`, o atuin ganhou (e o esperado).

@@ -23,8 +23,8 @@ inteligente, ls/cat modernos) vem de ferramentas dedicadas que voce combina.
 |---|---|---|
 | Autosuggestions + realce de sintaxe + menu de completion | **ble.sh** | Substitui a Readline; cobre 3 plugins do oh-my-zsh de uma vez |
 | Prompt | **Starship** | O mesmo prompt do zsh, identico entre shells |
-| Busca fuzzy (arquivos, cd, historico) | **fzf** | Integrado pelo contrib do ble.sh (C-t, C-r, M-c) |
-| Historico melhor (busca, sync opcional) | **atuin** | Assume o C-r; requer ble.sh para os hooks corretos |
+| Busca fuzzy (arquivos e cd) | **fzf** | Integrado pelo contrib do ble.sh (C-t arquivos, M-c cd) |
+| Historico melhor (busca, sync opcional) | **atuin** | Assume o C-r e a seta-cima; requer ble.sh para os hooks corretos |
 | cd inteligente (tipo z/autojump) | **zoxide** | Comando configuravel |
 | ls / cat / find modernos | **eza / bat / fd** | Aliases opcionais |
 | Aliases git/git-flow/gerenciador de pacotes | portados do oh-my-zsh | Ver `docs/paridade-oh-my-zsh.md` |
