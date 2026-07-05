@@ -1,0 +1,28 @@
+# Exemplo de ~/.inputrc (configuracao da Readline).
+#
+# NOTA: com o ble.sh ativo, a Readline nativa e substituida pelo editor do
+# ble.sh, entao boa parte destas opcoes passa a nao ter efeito no bash
+# interativo com ble.sh. Ainda assim vale mante-las: outros programas que usam
+# a Readline (ex.: python, psql) e o bash SEM ble.sh continuam respeitando o
+# ~/.inputrc.
+
+$include /etc/inputrc
+
+# Completar ignorando maiusculas/minusculas
+set completion-ignore-case on
+# Tratar - e _ como equivalentes no completion
+set completion-map-case on
+# Mostrar os candidatos de uma vez, sem perguntar "Display all N?"
+set completion-query-items 200
+# Marcar diretorios/tipos com sufixo no completion
+set visible-stats on
+set colored-stats on
+# Realcar o prefixo comum ja digitado ao listar candidatos
+set colored-completion-prefix on
+# Menu-completion ciclico com TAB (parecido com o do zsh)
+set show-all-if-ambiguous on
+set menu-complete-display-prefix on
+
+# Historico por prefixo com as setas (comum tambem no oh-my-zsh)
+"\e[A": history-search-backward
+"\e[B": history-search-forward

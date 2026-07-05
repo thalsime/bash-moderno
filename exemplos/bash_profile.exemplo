@@ -1,0 +1,15 @@
+# Exemplo de ~/.bash_profile - LEIA a nota, pois a recomendacao muda por sistema.
+#
+# openSUSE (e algumas distros): o /etc/profile ja carrega o ~/.bashrc em login
+# shells. Nesse caso o .bash_profile deve APENAS encadear o ~/.profile e NAO
+# re-sourar o ~/.bashrc (senao o ble-attach rodaria duas vezes):
+[ -f ~/.profile ] && . ~/.profile
+
+# macOS e distros que NAO carregam o .bashrc no login: faca o oposto - o
+# .bash_profile deve carregar o .bashrc. Nesse caso, use a linha abaixo em vez
+# da de cima:
+#
+#   [ -r ~/.bashrc ] && . ~/.bashrc
+#
+# A regra que nao muda: "ble-attach" e a ultima linha do ~/.bashrc, e o .bashrc
+# so' pode ser carregado UMA vez por sessao.

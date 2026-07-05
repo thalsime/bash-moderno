@@ -1,0 +1,10 @@
+# Backups locais de dotfiles gerados pelos scripts (nao versionar)
+*.bak
+*.orig
+dotfiles-backup-*/
+.dotfiles-backup-*/
+
+# Lixo de editor / SO
+*~
+.DS_Store
+*.swp
