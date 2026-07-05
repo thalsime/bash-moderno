@@ -49,6 +49,11 @@ if command -v pyenv >/dev/null 2>&1; then
   [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init - bash)"
   eval "$(pyenv virtualenv-init -)" 2>/dev/null
+  # pyenv virtualenv-init faz "_pyenv_virtualenv_hook;$PROMPT_COMMAND"; com o
+  # PROMPT_COMMAND vazio aqui, sobra um ';' no fim. O zoxide (mais abaixo) so'
+  # apara espacos e concatena com ';', gerando ';;' - que quebra o eval do
+  # ble-attach ("erro de sintaxe proximo ao token ';;'"). Removemos o ';' solto.
+  PROMPT_COMMAND="${PROMPT_COMMAND%;}"
 fi
 
 # 7) colored man pages (via bat quando houver)
