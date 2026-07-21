@@ -17,7 +17,15 @@ case $- in *i*) ;; *) return ;; esac
 [[ -r ~/.local/share/blesh/ble.sh ]] && source -- ~/.local/share/blesh/ble.sh --attach=none
 
 # 2) bash-completion (garante tambem em shells nao-login)
-[[ -r /usr/share/bash-completion/bash_completion ]] && . /usr/share/bash-completion/bash_completion
+#    Linux: pacote da distro. macOS: brew install bash-completion@2, que instala
+#    em $(brew --prefix)/etc/profile.d/ -- /usr/local no Intel, /opt/homebrew no
+#    Apple Silicon.
+for _bc in /usr/share/bash-completion/bash_completion \
+           /usr/local/etc/profile.d/bash_completion.sh \
+           /opt/homebrew/etc/profile.d/bash_completion.sh; do
+  [[ -r $_bc ]] && { . "$_bc"; break; }
+done
+unset _bc
 
 # 3) Historia
 export HISTCONTROL=ignoreboth:erasedups
@@ -27,13 +35,20 @@ shopt -s histappend checkwinsize
 shopt -s autocd cdspell dirspell globstar 2>/dev/null
 
 # 4) fzf pela integracao contrib do ble.sh (NAO use "fzf --bash" direto).
-#    Ajuste _ble_contrib_fzf_base ao caminho dos scripts do fzf na sua distro
-#    (ex.: /usr/share/fzf/shell, /usr/share/fzf, /usr/share/doc/fzf/examples).
-#    Ambos com -d (delayed): os binds so' se registram depois do attach.
-if [[ -n ${BLE_VERSION-} && -d /usr/share/fzf/shell ]]; then
-  _ble_contrib_fzf_base=/usr/share/fzf/shell
-  ble-import -d integration/fzf-completion
-  ble-import -d integration/fzf-key-bindings
+#    O caminho dos scripts do fzf varia: /usr/share/fzf/shell, /usr/share/fzf ou
+#    /usr/share/doc/fzf/examples nas distros; $(brew --prefix)/opt/fzf/shell no
+#    macOS. Ambos com -d (delayed): os binds so' se registram depois do attach.
+if [[ -n ${BLE_VERSION-} ]]; then
+  for _fzfd in /usr/share/fzf/shell /usr/share/fzf /usr/share/doc/fzf/examples \
+               /usr/local/opt/fzf/shell /opt/homebrew/opt/fzf/shell; do
+    if [[ -d $_fzfd ]]; then
+      _ble_contrib_fzf_base=$_fzfd
+      ble-import -d integration/fzf-completion
+      ble-import -d integration/fzf-key-bindings
+      break
+    fi
+  done
+  unset _fzfd
 fi
 
 # 5) Autosuggestions/menu do ble.sh (paridade com zsh-autosuggestions)
